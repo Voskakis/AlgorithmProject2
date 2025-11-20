@@ -177,6 +177,7 @@ compose.*
 docker-compose.*
 Dockerfile
 volumes/
+entrypoint.sh
 
 # Abstra
 .abstra/
