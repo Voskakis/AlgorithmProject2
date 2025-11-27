@@ -26,7 +26,7 @@ class BuildInput:
     seed: Optional[int] = 1
 
     @classmethod
-    def parse_args():
+    def parse_args(cls):
         parser = argparse.ArgumentParser()
         parser.add_argument("-d", dest="input_file", type=Path, required=True)
         parser.add_argument("-i", dest="index_path", type=Path, required=True)
@@ -67,7 +67,7 @@ class SearchInput:
     range: Optional[bool] = True
 
     @classmethod
-    def parse_args():
+    def parse_args(cls):
         parser = argparse.ArgumentParser()
         parser.add_argument("-d", required=True, type=Path, dest="input_file")
         parser.add_argument("-q", required=True, type=Path, dest="query_file")
