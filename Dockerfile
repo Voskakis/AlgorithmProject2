@@ -1,6 +1,6 @@
 #escape=\
 
-FROM python:3.10.20
+FROM python:3.10.19
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
         bash \
