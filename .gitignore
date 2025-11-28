@@ -173,11 +173,11 @@ cython_debug/
 .idea/
 
 # Docker
-compose.*
-docker-compose.*
-Dockerfile
-volumes/
-entrypoint.sh
+# compose.*
+# docker-compose.*
+# Dockerfile
+# volumes/
+# entrypoint.sh
 
 # Abstra
 .abstra/
