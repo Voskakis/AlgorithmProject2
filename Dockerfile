@@ -21,4 +21,3 @@ RUN pip install --no-cache-dir -r /app/nlsh/requirements.txt
 COPY ./nlsh/. .
 RUN cp ./lsh/build/add_module.so ./nlsh/
 COPY ./entrypoint.sh /.
-ENTRYPOINT [ "/entrypoint.sh" ]

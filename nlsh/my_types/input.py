@@ -33,7 +33,7 @@ class BuildInput:
         parser.add_argument(
             "-type",
             dest="type",
-            choices=[e.value for e in EndianType],
+            choices=[e for e in EndianType],
             required=True,
             type=EndianType
         )
