@@ -16,7 +16,7 @@ def build_undirected_adj(knn: list[list[int]]) -> list[list[int]]:
     return adj
 
 
-def build_csr(adj: list[set[int]]):
+def build_csr(adj: list[list[int]]):
     """
     Convert 1-indexed adjacency list (sets) into CSR arrays for KaHIP:
       - 0-based adjncy
