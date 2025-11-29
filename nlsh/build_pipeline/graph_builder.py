@@ -1,41 +1,20 @@
-def build_undirected_adj(knn: list[list[int]]) -> list[list[int]]:
-    """
-    Turn directed KNN (1-indexed) into deduplicated, undirected neighbors.
-    """
-    node_count = len(knn) - 1
-    adj = [list() for _ in range(node_count + 1)]
+from collections import defaultdict
 
-    for u in range(1, node_count + 1):
+
+def build_graph_items(knn: list[list[int]]):
+    adj_set = defaultdict(list)
+    for u in range(len(knn)):
         for v in knn[u]:
-            if v != u:
-                adj[u].append(v)
-                adj[v].append(u)
-
-    for u in range(1, node_count + 1):
-        adj[u].sort()
-    return adj
-
-
-def build_csr(adj: list[list[int]]):
-    """
-    Convert 1-indexed adjacency list (sets) into CSR arrays for KaHIP:
-      - 0-based adjncy
-      - xadj of length n+1
-      - adjcwgt all = 1
-      - vwgt all = 1
-    """
-    node_count = len(adj) - 1
-
-    xadj = [0]
+            adj_set[u].append(v)
+            adj_set[v].append(u)
+    xadj = [0] * (len(knn) + 1)
     adjncy = []
-    adjcwgt = []
-    vwgt = [1] * node_count
-
-    for u in range(1, node_count + 1):
-        neighbors = sorted(adj[u])
-        for v in neighbors:
-            adjncy.append(v - 1)
-            adjcwgt.append(1)
-        xadj.append(len(adjncy))
-
-    return vwgt, xadj, adjcwgt, adjncy
+    edge_count = 0
+    for u in range(len(knn)):
+        neighs = sorted(adj_set[u])
+        adjncy.extend(neighs)
+        edge_count += len(neighs)
+        xadj[u + 1] = edge_count
+    vwgt = [1] * len(knn)
+    adjcwgt = [1] * len(adjncy)
+    return adj_set, xadj, vwgt, adjcwgt, adjncy
