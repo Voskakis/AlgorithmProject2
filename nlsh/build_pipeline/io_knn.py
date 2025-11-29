@@ -6,7 +6,6 @@ def load_knn_file(path: str) -> list[list[int]]:
     knn = [[]]  # index 0 unused
 
     with open(path) as f:
-        next(f)  # skip header line
         for line in f:
             if line.strip():
                 knn.append(list(map(int, line.split())))

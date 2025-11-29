@@ -1,16 +1,18 @@
-def build_undirected_adj(knn: list[list[int]]) -> list[set[int]]:
+def build_undirected_adj(knn: list[list[int]]) -> list[list[int]]:
     """
     Turn directed KNN (1-indexed) into deduplicated, undirected neighbors.
     """
     node_count = len(knn) - 1
-    adj = [set() for _ in range(node_count + 1)]
+    adj = [list() for _ in range(node_count + 1)]
 
     for u in range(1, node_count + 1):
         for v in knn[u]:
             if v != u:
-                adj[u].add(v)
-                adj[v].add(u)
+                adj[u].append(v)
+                adj[v].append(u)
 
+    for u in range(1, node_count + 1):
+        adj[u].sort()
     return adj
 
 
