@@ -1,4 +1,6 @@
-from build_pipeline import invert_partition, write_inverted, load_knn_file, run_kahip, build_graph_items
+from torch.utils.data import TensorDataset, DataLoader
+
+from build_pipeline import load_knn_file, run_kahip, build_graph_items, produce_long_tensor
 from my_types import BuildInput
 
 
@@ -11,11 +13,11 @@ def main():
     blocks, edgecut = run_kahip(vwgt, xadj, adjcwgt, adjncy, build_input.members, build_input.imbalance,
                                 build_input.seed, build_input.kahip_mode.value)
 
-    print(f"Edge cut: {edgecut}")
+    # X_tensor = torch.from_numpy(knn).float() #TODO: not working
+    y_tensor = produce_long_tensor(blocks)
 
-    # Step 5: Inverted file
-    inv = invert_partition(blocks, build_input.members)
-    write_inverted(inv, "inverted_file.txt")
+    # dataset = TensorDataset(X_tensor, y_tensor)
+    # loader = DataLoader(dataset, batch_size=build_input.batch_size, shuffle=True)
 
 
 if __name__ == "__main__":
