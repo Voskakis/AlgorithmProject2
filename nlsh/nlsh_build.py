@@ -1,6 +1,6 @@
 from torch.utils.data import TensorDataset, DataLoader
 
-from build_pipeline import load_knn_file, run_kahip, build_graph_items, produce_long_tensor
+from build_pipeline import load_knn_file, run_kahip, build_graph_items, produce_long_tensor, create_inverted_file
 from my_types import BuildInput
 
 
@@ -19,6 +19,6 @@ def main():
     # dataset = TensorDataset(X_tensor, y_tensor)
     # loader = DataLoader(dataset, batch_size=build_input.batch_size, shuffle=True)
 
-
+    create_inverted_file(blocks, build_input.members, build_input.index_path+"/inverted_file.txt")
 if __name__ == "__main__":
     main()
