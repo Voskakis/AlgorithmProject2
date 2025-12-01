@@ -4,13 +4,7 @@ import time
 import torch
 import torch.nn.functional as F
 
-def euclidean(vector1, vector2):
-    total = 0
-    for x, y in zip(vector1, vector2):
-        total += (x - y)**2
-    return math.sqrt(total)
-
-def format_output(image_id: int, image: list[int], results: list[list[int]], r:int=0) -> str:
+def format_output(image_id: int, results: list[list[int]], r:int=0) -> str:
     header = "Query: {qID}\n"
     bodyPiece = "Nearest neighbor-{count}: {neighborID}\ndistanceApproximate: {dis}\ndistanceTrue: {disT}\n\n}"
     rPiece = "R-near neighbors:\n"
@@ -25,13 +19,40 @@ def format_output(image_id: int, image: list[int], results: list[list[int]], r:i
                 output += str(result[0])
     return output
 
-def format_footer(queryCount: int, N:int, apTime:int, truTime: int, AFcount:int, recNcount:int)->str:
+def format_footer(queryCount: int, N:int, apTime:float, truTime: float, AFcount:int, recNcount:int)->str:
     footer = "Average AF: {avAF}\nRecall@N: {recN}\nQPS: {qps}\ntApproximateAverage: {tAvg}\ntTrueAverage: {tTrueAvg}"
     avAF = AFcount/queryCount
     recN = recNcount/(queryCount*N)
     tAvg = apTime/N
     tTrue = truTime/N
     return footer.format(avAF=avAF, recN=recN, QPS = 1/tAvg, tAvg=tAvg, tTrue=tTrue)
+
+def euclidean(vector1, vector2):
+    total = 0
+    for x, y in zip(vector1, vector2):
+        total += (x - y)**2
+    return math.sqrt(total)
+
+def add_better_result(point, q, result_list, N):
+    distance = euclidean(point, q)
+    if len(result_list) < N:
+        result_list.append([point, distance])
+        if len(result_list) == N and N > 1:
+            max_index = max(range(len(result_list)), key=lambda x: x[1])
+            result_list[0], result_list[max_index] = result_list[max_index], result_list[0]
+    elif distance < result_list[0][1]:
+        result_list[0] = [point, distance]
+        max_index = max(range(len(result_list)), key=lambda x: x[1])
+        result_list[0], result_list[max_index] = result_list[max_index], result_list[0]
+    return result_list
+
+def exhaustive_search(point_set: list[list[int]], q, N) -> list[list[int]]:
+    result_list = []
+    for point in point_set:
+        result_list = add_better_result(point, q, result_list, N)
+    result_list = sorted(result_list, key=lambda x: x[1])
+    return result_list
+
 
 # TODO input handling
 queries = [[]] # loaded by input
@@ -51,6 +72,7 @@ recNcount = 0
 
 outputFile = open("filepath", "a")
 outputFile.write("Neural LSH\n")
+
 for q, index in zip(queries, range(len(queries))):
     start = time.time()
     # prediction
@@ -66,37 +88,13 @@ for q, index in zip(queries, range(len(queries))):
         for pointID in inverted_file[label]:
             search_space.append(point_set[pointID])
     # exhaustive search
-    results = []
-    for point in search_space:
-        distance = euclidean(point, q)
-        if len(results)<N:
-            results.append([point, distance])
-            if len(results)==N and N>1:
-                maxIndex = max(range(len(results)), key=lambda x: x[1])
-                results[0], results[maxIndex] = results[maxIndex], results[0]
-        elif distance < results[0][1]:
-            results[0] = [point, distance]
-            maxIndex = max(range(len(results)), key=lambda x: x[1])
-            results[0], results[maxIndex] = results[maxIndex], results[0]
-    results = sorted(results, key=lambda x: x[1])
+    results = exhaustive_search(search_space, q, N)
     end = time.time()
     totalAproximateTime += (end - start)
 
     #brute force
     start = time.time()
-    exhaustResults = []
-    for point in point_set:
-        distance = euclidean(point, q)
-        if len(exhaustResults) < N:
-            exhaustResults.append([point, distance])
-            if len(exhaustResults) == N and N > 1:
-                maxIndex = max(range(len(exhaustResults)), key=lambda x: x[1])
-                exhaustResults[0], exhaustResults[maxIndex] = exhaustResults[maxIndex], exhaustResults[0]
-        elif distance < exhaustResults[0][1]:
-            exhaustResults[0] = [point, distance]
-            maxIndex = max(range(len(exhaustResults)), key=lambda x: x[1])
-            exhaustResults[0], exhaustResults[maxIndex] = exhaustResults[maxIndex], exhaustResults[0]
-    exhaustResults = sorted(exhaustResults, key=lambda x: x[1])
+    exhaustResults = exhaustive_search(point_set, q, N)
     end = time.time()
     totalExhaustTime += (end - start)
 
@@ -104,7 +102,7 @@ for q, index in zip(queries, range(len(queries))):
     AFcount += results[0][1]/results[0][2]
     recNcount += sum(x not in results for x in exhaustResults)
 
-    outputFile.write(format_output(index, q, [r1 +r2[1:] for r1, r2 in zip(results, exhaustResults)],R))
+    outputFile.write(format_output(index, [r1 +r2[1:] for r1, r2 in zip(results, exhaustResults)],R))
 outputFile.write(format_footer(len(queries), N, totalAproximateTime, totalExhaustTime, AFcount, recNcount))
 outputFile.close()
 
