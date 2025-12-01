@@ -4,5 +4,7 @@ from build_pipeline.io_knn import load_knn_file
 from build_pipeline.kahip_runner import run_kahip
 from build_pipeline.numpy_runner import produce_long_tensor
 from build_pipeline.invert import create_inverted_file
+from build_pipeline.neural import MLPClassifier
 
-__all__ = ["build_graph_items", "invert_partition", "write_inverted", "run_kahip", "load_knn_file", "produce_long_tensor"]
+__all__ = ["build_graph_items", "invert_partition", "write_inverted", "run_kahip", "load_knn_file",
+           "produce_long_tensor", "create_inverted_file", "MLPClassifier"]
