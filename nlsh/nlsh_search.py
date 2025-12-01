@@ -37,11 +37,9 @@ def add_better_result(point, q, result_list, N):
     distance = euclidean(point, q)
     if len(result_list) < N:
         result_list.append([point, distance])
-        if len(result_list) == N and N > 1:
-            max_index = max(range(len(result_list)), key=lambda x: x[1])
-            result_list[0], result_list[max_index] = result_list[max_index], result_list[0]
     elif distance < result_list[0][1]:
         result_list[0] = [point, distance]
+    if len(result_list) >= N > 1:
         max_index = max(range(len(result_list)), key=lambda x: x[1])
         result_list[0], result_list[max_index] = result_list[max_index], result_list[0]
     return result_list
