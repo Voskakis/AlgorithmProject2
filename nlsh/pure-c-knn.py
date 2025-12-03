@@ -1,11 +1,5 @@
-import math
-import time
-
-import torch.nn.functional as F
-from torch.utils.data import TensorDataset, DataLoader, Dataset
-import torch
-from build_pipeline.neural import MLPClassifier
 from my_types import SearchInput
+import time, math
 
 def format_output(image_id: int, results: list[list[int]], r:int=0) -> str:
     header = "Query: {qID}\n"
@@ -56,13 +50,9 @@ def exhaustive_search(point_set: list[list[int]], q, N) -> list[list[int]]:
 
 def main():
     search_input = SearchInput.parse_args()
-    inverted_file = (search_input.index_path+"/inverted_file.txt") #TODO actually load this
+    knn = [] #TODO create KNN here with c
 
-    input_dim = 28 * 28 # TODO possibly different for SIFT
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = MLPClassifier(d_in=input_dim, n_out=search_input.members, layers=search_input.layers, nodes=search_input.nodes).to(device)
-    model.load_state_dict(torch.load(search_input.index_path+"/model.pth"))
-    model.eval()
+    buckets_file = [] #TODO use C to get every point of each bucket here
 
     totalAproximateTime = 0
     totalExhaustTime = 0
@@ -70,42 +60,38 @@ def main():
     recNcount = 0
 
     outputFile = open(search_input.output_file, "a")
-    outputFile.write("Neural LSH\n")
+    outputFile.write("C LSH\n")
 
     for q, index in zip(search_input.query_file, range(len(search_input.query_file))):
         start = time.time()
-        # prediction
-        query_tensor = torch.tensor(q, dtype=torch.float32).unsqueeze(0).view(1, -1)
-        with torch.no_grad():
-            logits = model(query_tensor)
-            probs = F.softmax(logits, dim=1)
-        # multiprobe
-        top_k_probs, top_k_labels = torch.topk(probs, search_input.bins_check, 1)
+        # calculate hash buckets to use with c
+        labels = [] #TODO do it using C
         # candidates
         search_space = []
-        print(top_k_labels)
-        for label_tensor in top_k_labels[0]:
-            label = label_tensor.item()
-            for pointID in inverted_file[label]:
+        for label in labels:
+            for pointID in buckets_file[label]:
                 search_space.append(search_input.input_file[pointID])
         # exhaustive search
         results = exhaustive_search(search_space, q, search_input.nearest_neighbors)
         end = time.time()
         totalAproximateTime += (end - start)
 
-        #brute force
+        # brute force
         start = time.time()
         exhaustResults = exhaustive_search(search_input.input_file, q, search_input.nearest_neighbors)
         end = time.time()
         totalExhaustTime += (end - start)
 
         # output
-        AFcount += results[0][1]/results[0][2]
+        AFcount += results[0][1] / results[0][2]
         recNcount += sum(x not in results for x in exhaustResults)
 
-        outputFile.write(format_output(index, [r1 +r2[1:] for r1, r2 in zip(results, exhaustResults)],search_input.search_radius))
-    outputFile.write(format_footer(len(search_input.query_file), search_input.nearest_neighbors, totalAproximateTime, totalExhaustTime, AFcount, recNcount))
+        outputFile.write(
+            format_output(index, [r1 + r2[1:] for r1, r2 in zip(results, exhaustResults)], search_input.search_radius))
+    outputFile.write(format_footer(len(search_input.query_file), search_input.nearest_neighbors, totalAproximateTime,
+                                   totalExhaustTime, AFcount, recNcount))
     outputFile.close()
+
 
 if __name__ == "__main__":
     main()
