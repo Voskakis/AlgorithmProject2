@@ -50,7 +50,6 @@ def exhaustive_search(point_set: list[list[int]], q, N) -> list[list[int]]:
 
 def main():
     search_input = SearchInput.parse_args()
-    knn = [] #TODO create KNN here with c
 
     buckets_file = [] #TODO use C to get every point of each bucket here
 

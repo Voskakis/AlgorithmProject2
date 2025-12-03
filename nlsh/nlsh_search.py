@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader, Dataset
 import torch
 from build_pipeline.neural import MLPClassifier
+from build_pipeline import load_inverted_file
 from my_types import SearchInput
 
 def format_output(image_id: int, results: list[list[int]], r:int=0) -> str:
@@ -56,7 +57,7 @@ def exhaustive_search(point_set: list[list[int]], q, N) -> list[list[int]]:
 
 def main():
     search_input = SearchInput.parse_args()
-    inverted_file = (search_input.index_path+"/inverted_file.txt") #TODO actually load this
+    inverted_file = load_inverted_file(search_input.index_path+"/inverted_file.txt")
 
     input_dim = 28 * 28 # TODO possibly different for SIFT
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
