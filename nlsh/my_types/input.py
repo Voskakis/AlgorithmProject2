@@ -85,6 +85,8 @@ class SearchInput:
         )
         args = parser.parse_args()
         endian_type = EndianType(args.type)
+        if not range:
+            args.search_radius = 0
         if args.search_radius is None:
             if endian_type == EndianType.Sift:
                 args.search_radius = 2800
