@@ -1,9 +1,9 @@
 CXX = g++
 CXXFLAGS = -O3 -Wall -shared -std=c++17 -fPIC
 
-# Get Python and pybind11 compile flags
+# Get Python + pybind11 include flags
 PYTHON_INC := $(shell python3 -m pybind11 --includes)
-PYTHON_EXT := $(shell python3-config --extension-suffix)
+OUTPUT = lshlib.so
 
 MODULES = \
     modules/UserInputHandling.cpp \
@@ -15,10 +15,10 @@ MODULES = \
     modules/lsh_interface.cpp \
     bindings.cpp
 
-all: lshlib$(PYTHON_EXT)
+all: $(OUTPUT)
 
-lshlib$(PYTHON_EXT): $(MODULES)
-	$(CXX) $(CXXFLAGS) $(MODULES) $(PYTHON_INC) -o $@
+$(OUTPUT): $(MODULES)
+	$(CXX) $(CXXFLAGS) $(MODULES) $(PYTHON_INC) -o $(OUTPUT)
 
 clean:
 	rm -f lshlib*.so

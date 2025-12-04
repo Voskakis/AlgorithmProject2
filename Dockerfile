@@ -10,14 +10,10 @@ RUN apt-get update && apt-get upgrade -y \
 
 COPY ./lsh /app/lsh/
 WORKDIR /app/lsh
-RUN mkdir -p build \
-    && cd build \
-    && cmake .. \
-    && cmake --build .
+RUN make .
 
 WORKDIR /app
 COPY ./nlsh/requirements.txt /app/nlsh/requirements.txt
 RUN pip install --no-cache-dir -r /app/nlsh/requirements.txt
 COPY ./nlsh/. .
-RUN cp ./lsh/build/add_module.so ./nlsh/
-COPY ./entrypoint.sh /.
+RUN cp ./lsh/lshlib.so ./nlsh/
