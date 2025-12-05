@@ -357,6 +357,13 @@ void Nearest_Query_Euclidian(int query_line, int L, int k, int N) {
         time_to_break = 3 * L;
     }
 
+    if (best_lsh.empty()) {
+        for (long long unsigned int i = 0; i < n; ++i) {
+            long long unsigned int d = calcute_euclidian_distance(i, query_line);
+            update_best(i, d);  // reuse same top-N logic
+        }
+    }
+
     auto finish1 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed1 = finish1 - start1;
 

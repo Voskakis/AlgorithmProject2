@@ -8,14 +8,14 @@ RUN apt-get update && apt-get upgrade -y \
         cmake \
         pybind11-dev
 
-WORKDIR /app
-COPY ./nlsh/requirements.txt /app/nlsh/requirements.txt
-RUN pip install --no-cache-dir -r /app/nlsh/requirements.txt
+WORKDIR /app/nlsh
+COPY ./nlsh/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r ./requirements.txt
 
 COPY ./lsh /app/lsh/
 WORKDIR /app/lsh
 RUN make
 
-WORKDIR /app
-COPY ./nlsh/. .
-RUN cp ./lsh/lshlib.cpython-310-x86_64-linux-gnu.so .
+WORKDIR /app/nlsh
+COPY ./nlsh .
+RUN cp /app/lsh/lshlib.*.so .
