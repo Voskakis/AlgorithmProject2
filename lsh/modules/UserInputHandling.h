@@ -18,6 +18,7 @@ extern int k; /* Number of LSH Functions */
 extern int L; /* Number of Hash Tables */
 
 extern bool metric; /* Metric to be used 0: Euclidian 1: Cosine */
+extern int N;
 
 int user_input_handling(int argc, char *argv[]); /* Handling of Command Line Arguments & File Opening */
 

@@ -2,285 +2,282 @@
 
 using namespace std;
 
-int user_input_handling(int argc, char *argv[]){ 
+int user_input_handling(int argc, char* argv[]) {
+    int file_to_output = 0;
 
-	int file_to_output = 0;
+    short int cur_arg = 1;
 
-	short int cur_arg = 1;
+    short int input_given = 0;
 
-	short int input_given = 0;
+    short int query_given = 0;
 
-	short int query_given = 0;
+    short int output_given = 0;
 
-	short int output_given = 0;
+    short int metric_given = 0;
 
-	short int metric_given = 0;
-	
-	while( cur_arg < argc ){
+    while (cur_arg < argc) {
+        if (strcmp(argv[cur_arg], "-d") == 0) { /* Checking for Input File */
 
-		if( strcmp(argv[cur_arg],"-d") == 0 ){	/* Checking for Input File */
+            if (cur_arg == (argc - 1) || strcmp(argv[cur_arg + 1], "-d") == 0 ||
+                strcmp(argv[cur_arg + 1], "-q") == 0 || strcmp(argv[cur_arg + 1], "-k") == 0 ||
+                strcmp(argv[cur_arg + 1], "-L") == 0 || strcmp(argv[cur_arg + 1], "-o") == 0 ||
+                strcmp(argv[cur_arg + 1], "-M") == 0 || strcmp(argv[cur_arg + 1], "-probes") == 0) {
+                cout << "Please specify an Input file." << endl;
 
-			if( cur_arg == (argc - 1) || strcmp(argv[cur_arg+1],"-d") == 0 || strcmp(argv[cur_arg+1],"-q") == 0 || strcmp(argv[cur_arg+1],"-k") == 0 || strcmp(argv[cur_arg+1],"-L") == 0 || strcmp(argv[cur_arg+1],"-o") == 0 || strcmp(argv[cur_arg+1],"-M") == 0 || strcmp(argv[cur_arg+1],"-probes") == 0 ){
+                return -1;
+            } else {
+                inFile.open(argv[cur_arg + 1]);
 
-				cout << "Please specify an Input file." << endl;
+                input_given = 1;
 
-				return -1;
-			}
-			else{
+                if (!inFile) {
+                    cout << "Could not find specified Input file.The program will now exit."
+                         << endl;
 
-				inFile.open(argv[cur_arg+1]);
+                    return -1;
+                }
+            }
 
-				input_given = 1;
+        } else if (strcmp(argv[cur_arg], "-q") == 0) { /* Checking for Query File */
 
-				if(!inFile){
+            if (cur_arg == (argc - 1) || strcmp(argv[cur_arg + 1], "-d") == 0 ||
+                strcmp(argv[cur_arg + 1], "-q") == 0 || strcmp(argv[cur_arg + 1], "-k") == 0 ||
+                strcmp(argv[cur_arg + 1], "-L") == 0 || strcmp(argv[cur_arg + 1], "-o") == 0 ||
+                strcmp(argv[cur_arg + 1], "-M") == 0 || strcmp(argv[cur_arg + 1], "-probes") == 0) {
+                cout << "Please specify a Query file." << endl;
 
-					cout << "Could not find specified Input file.The program will now exit." << endl;
+                return -1;
+            } else {
+                qFile.open(argv[cur_arg + 1]);
 
-					return -1;
+                query_given = 1;
 
-				}
+                if (!qFile) {
+                    cout << "Could not find specified Query file.The program will now exit."
+                         << endl;
 
-			}
+                    return -1;
+                }
+            }
 
-		}else if( strcmp(argv[cur_arg],"-q") == 0 ){ /* Checking for Query File */
+        } else if (strcmp(argv[cur_arg], "-k") == 0) { /* Checking for k */
 
-			if( cur_arg == (argc - 1) || strcmp(argv[cur_arg+1],"-d") == 0 || strcmp(argv[cur_arg+1],"-q") == 0 || strcmp(argv[cur_arg+1],"-k") == 0 || strcmp(argv[cur_arg+1],"-L") == 0 || strcmp(argv[cur_arg+1],"-o") == 0 || strcmp(argv[cur_arg+1],"-M") == 0 || strcmp(argv[cur_arg+1],"-probes") == 0  ){
+            if (cur_arg == (argc - 1) || strcmp(argv[cur_arg + 1], "-d") == 0 ||
+                strcmp(argv[cur_arg + 1], "-q") == 0 || strcmp(argv[cur_arg + 1], "-k") == 0 ||
+                strcmp(argv[cur_arg + 1], "-L") == 0 || strcmp(argv[cur_arg + 1], "-o") == 0 ||
+                strcmp(argv[cur_arg + 1], "-M") == 0 || strcmp(argv[cur_arg + 1], "-probes") == 0) {
+                cout << "Please specify a value for k." << endl;
 
-				cout << "Please specify a Query file." << endl;
+                return -1;
+            } else
+                k = atoi(argv[cur_arg + 1]);
 
-				return -1;
-			}
-			else{
+        } else if (strcmp(argv[cur_arg], "-L") == 0) { /* Checking for L */
 
-				qFile.open(argv[cur_arg+1]);
+            if (cur_arg == (argc - 1) || strcmp(argv[cur_arg + 1], "-d") == 0 ||
+                strcmp(argv[cur_arg + 1], "-q") == 0 || strcmp(argv[cur_arg + 1], "-k") == 0 ||
+                strcmp(argv[cur_arg + 1], "-L") == 0 || strcmp(argv[cur_arg + 1], "-o") == 0 ||
+                strcmp(argv[cur_arg + 1], "-M") == 0 || strcmp(argv[cur_arg + 1], "-probes") == 0) {
+                cout << "Please specify a value for L." << endl;
 
-				query_given = 1;
+                return -1;
+            } else
+                L = atoi(argv[cur_arg + 1]);
 
-				if(!qFile){
+        } else if (strcmp(argv[cur_arg], "-o") == 0) { /* Checking for Query File */
 
-					cout << "Could not find specified Query file.The program will now exit." << endl;
+            if (cur_arg == (argc - 1) || strcmp(argv[cur_arg + 1], "-d") == 0 ||
+                strcmp(argv[cur_arg + 1], "-q") == 0 || strcmp(argv[cur_arg + 1], "-k") == 0 ||
+                strcmp(argv[cur_arg + 1], "-L") == 0 || strcmp(argv[cur_arg + 1], "-o") == 0 ||
+                strcmp(argv[cur_arg + 1], "-M") == 0 || strcmp(argv[cur_arg + 1], "-probes") == 0) {
+                cout << "Please specify an output file." << endl;
 
-					return -1;
+                return -1;
+            } else {
+                outFile.open(argv[cur_arg + 1]);
 
-				}
+                output_given = 1;
 
-			}
+                if (!outFile) {
+                    cout << "Could not find/create specified output file.The program will now exit."
+                         << endl;
 
-		}else if( strcmp(argv[cur_arg],"-k") == 0 ){ /* Checking for k */
+                    return -1;
+                }
+            }
 
-			if( cur_arg == (argc - 1) || strcmp(argv[cur_arg+1],"-d") == 0 || strcmp(argv[cur_arg+1],"-q") == 0 || strcmp(argv[cur_arg+1],"-k") == 0 || strcmp(argv[cur_arg+1],"-L") == 0 || strcmp(argv[cur_arg+1],"-o") == 0 || strcmp(argv[cur_arg+1],"-M") == 0 || strcmp(argv[cur_arg+1],"-probes") == 0 ){
+        } else if (strcmp(argv[cur_arg], "-metric") == 0) { /* Find metric */
 
-				cout << "Please specify a value for k." << endl;
+            if (cur_arg == (argc - 1) || strcmp(argv[cur_arg + 1], "-d") == 0 ||
+                strcmp(argv[cur_arg + 1], "-q") == 0 || strcmp(argv[cur_arg + 1], "-k") == 0 ||
+                strcmp(argv[cur_arg + 1], "-L") == 0 || strcmp(argv[cur_arg + 1], "-o") == 0 ||
+                strcmp(argv[cur_arg + 1], "-M") == 0 || strcmp(argv[cur_arg + 1], "-probes") == 0) {
+                cout << "Please specify a metric to be used." << endl;
 
-				return -1;
-			}
-			else k = atoi(argv[cur_arg+1]);
+                return -1;
 
-		}else if( strcmp(argv[cur_arg],"-L") == 0  ){ /* Checking for L */
+            } else {
+                if (strcmp(argv[cur_arg + 1], "cosine") == 0) {
+                    metric = 1;
+                }
+            }
 
-			if( cur_arg == (argc - 1) || strcmp(argv[cur_arg+1],"-d") == 0 || strcmp(argv[cur_arg+1],"-q") == 0 || strcmp(argv[cur_arg+1],"-k") == 0 || strcmp(argv[cur_arg+1],"-L") == 0 || strcmp(argv[cur_arg+1],"-o") == 0 || strcmp(argv[cur_arg+1],"-M") == 0 || strcmp(argv[cur_arg+1],"-probes") == 0  ){
+        } else if (strcmp(argv[cur_arg], "-N") ==
+                   0) { /* Checking for number of nearest neighbors */
 
-				cout << "Please specify a value for L." << endl;
+            if (cur_arg == (argc - 1) || strcmp(argv[cur_arg + 1], "-d") == 0 ||
+                strcmp(argv[cur_arg + 1], "-q") == 0 || strcmp(argv[cur_arg + 1], "-k") == 0 ||
+                strcmp(argv[cur_arg + 1], "-L") == 0 || strcmp(argv[cur_arg + 1], "-o") == 0 ||
+                strcmp(argv[cur_arg + 1], "-M") == 0 || strcmp(argv[cur_arg + 1], "-probes") == 0 ||
+                strcmp(argv[cur_arg + 1], "-metric") == 0) {
+                cout << "Please specify a value for N." << endl;
+                return -1;
+            }
 
-				return -1;
-			}
-			else L = atoi(argv[cur_arg+1]);
+            N = atoi(argv[cur_arg + 1]);
 
-		}else if( strcmp(argv[cur_arg],"-o") == 0 ){ /* Checking for Query File */
+            if (N <= 0) {
+                cout << "N must be a positive integer." << endl;
+                return -1;
+            }
+        } else {
+            cout << "Invalid Arguments Given.Available Arguments are:" << endl;
 
-			if( cur_arg == (argc - 1) || strcmp(argv[cur_arg+1],"-d") == 0 || strcmp(argv[cur_arg+1],"-q") == 0 || strcmp(argv[cur_arg+1],"-k") == 0 || strcmp(argv[cur_arg+1],"-L") == 0 || strcmp(argv[cur_arg+1],"-o") == 0 || strcmp(argv[cur_arg+1],"-M") == 0 || strcmp(argv[cur_arg+1],"-probes") == 0  ){
+            cout << "-d -k -o -L -metric" << endl;
 
-				cout << "Please specify an output file." << endl;
+            return -1;
+        }
 
-				return -1;
-			}else{
+        cur_arg = cur_arg + 2;
+    }
 
-				outFile.open(argv[cur_arg+1]);
+    string str;
 
-				output_given = 1;
+    if (input_given == 0) { /* If the user has not specified an input file, ask for it */
 
-				if(!outFile){
+        cout << "Please specify an input file: ";
 
-					cout << "Could not find/create specified output file.The program will now exit." << endl;
+        cin >> str;
 
-					return -1;
+        inFile.open(str);
 
-				}
+        if (!inFile) {
+            cout << "Could not find specified Input file." << endl;
 
-			}
+            return -1;
+        }
+    }
 
-		}else if( strcmp(argv[cur_arg],"-metric") == 0 ){ /* Find metric */
+    if (query_given == 0) { /* If the user has not specified a query file, ask for it */
 
-			if( cur_arg == (argc - 1) || strcmp(argv[cur_arg+1],"-d") == 0 || strcmp(argv[cur_arg+1],"-q") == 0 || strcmp(argv[cur_arg+1],"-k") == 0 || strcmp(argv[cur_arg+1],"-L") == 0 || strcmp(argv[cur_arg+1],"-o") == 0 || strcmp(argv[cur_arg+1],"-M") == 0 || strcmp(argv[cur_arg+1],"-probes") == 0  ){
+        cout << "Please specify a query file: ";
 
-				cout << "Please specify a metric to be used." << endl;
+        cin >> str;
 
-				return -1;
+        qFile.open(str);
 
-			}else{
+        if (!qFile) {
+            cout << "Could not find specified Query file." << endl;
 
-				if( strcmp(argv[cur_arg+1],"cosine") == 0 ){
+            return -1;
+        }
+    }
 
-					metric = 1;
+    if (output_given ==
+        0) { /* If the user has not specified an output file via the CL, ask for it */
 
-				}
+        cout << "Please specify an output file: ";
 
-			}
+        cin >> str;
 
-		}else{
+        outFile.open(str);
 
-			cout << "Invalid Arguments Given.Available Arguments are:" << endl;
+        if (!outFile) {
+            cout << "Could not find specified Output file." << endl;
 
-			cout << "-d -k -o -L -metric" << endl;
+            return -1;
+        }
+    }
 
-			return -1;
-
-		}
-
-		cur_arg = cur_arg + 2;
-	}
-
-	string str;
-
-	if( input_given == 0 ){ /* If the user has not specified an input file, ask for it */
-
-		cout << "Please specify an input file: ";
-
-		cin >> str;
-
-		inFile.open(str);
-
-		if(!inFile){
-
-			cout << "Could not find specified Input file." << endl;
-
-			return -1;
-
-		}
-
-	}
-
-	if( query_given == 0 ){ /* If the user has not specified a query file, ask for it */
-
-		cout << "Please specify a query file: ";
-
-		cin >> str;
-
-		qFile.open(str);
-
-		if(!qFile){
-
-			cout << "Could not find specified Query file." << endl;
-
-			return -1;
-
-		}
-
-	}
-
-	if( output_given == 0 ){ /* If the user has not specified an output file via the CL, ask for it */
-
-		cout << "Please specify an output file: ";
-
-		cin >> str;
-
-		outFile.open(str);
-
-		if(!outFile){
-
-			cout << "Could not find specified Output file." << endl;
-
-			return -1;
-
-		}
-
-	}
-
-	return 0;
+    return 0;
 }
 
-long long unsigned int get_number_of_lines(void){
+long long unsigned int get_number_of_lines(void) {
+    /* First find out how many lines the dataset has */
 
-	/* First find out how many lines the dataset has */
+    long long unsigned int lines = 0; /* Im using a long long unsigned int for maximum range */
 
-	long long unsigned int lines=0; 	/* Im using a long long unsigned int for maximum range */
+    string str;
 
-	string str;
+    while (getline(inFile, str))
+        ++lines;
 
-	while( getline(inFile,str) ) ++lines;
+    // cout << "Input line: " << lines << endl;
 
-	// cout << "Input line: " << lines << endl;
+    inFile.clear();
+    inFile.seekg(0, ios::beg);
 
-	inFile.clear();
-	inFile.seekg(0,ios::beg);
-
-	return lines;
+    return lines;
 }
 
-long unsigned int get_dim_of_data(void){
+long unsigned int get_dim_of_data(void) {
+    long unsigned int dim = 0;
 
-	long unsigned int dim = 0;
+    string str;
 
-	string str;
+    getline(inFile, str);
 
-	getline(inFile,str);
+    for (int i = 0; i < str.size(); i++) {
+        if (str[i] == ' ')
+            dim++;
+    }
 
-	for(int i = 0; i < str.size(); i++ ){
+    // dim--;
 
-		if(str[i]== ' ') dim++;
+    inFile.clear();
+    inFile.seekg(0, ios::beg);
 
-	}
-
-
-	// dim--;
-
-
-	inFile.clear();
-	inFile.seekg(0,ios::beg);
-
-	return dim;
+    return dim;
 }
 
-void move_input_to_line(int line){
+void move_input_to_line(int line) {
+    string str;
 
-	string str;
+    inFile.clear();
+    inFile.seekg(0, ios::beg);
 
-	inFile.clear();
-	inFile.seekg(0,ios::beg);
+    for (int i = 1; i <= line; i++)
+        getline(inFile, str);
 
-	for(int i=1;i<=line;i++) getline(inFile,str);
-
-	// cout << "line " << line << " : " << str << endl;
-
+    // cout << "line " << line << " : " << str << endl;
 }
 
-void get_query(int query_line){
+void get_query(int query_line) {
+    string str;
 
-	string str;
+    qFile.clear();
+    qFile.seekg(0, ios::beg);
 
-	qFile.clear();
-	qFile.seekg(0,ios::beg);
+    for (int i = 0; i < query_line; i++)
+        getline(qFile, str);
 
-	for(int i=0;i<query_line;i++) getline(qFile,str);
-
-	// cout << str << endl;
-
+    // cout << str << endl;
 }
 
-long long unsigned int get_number_of_queries(void){
+long long unsigned int get_number_of_queries(void) {
+    /* Finds out how many lines the query file has */
 
-	/* Finds out how many lines the query file has */
+    long long unsigned int lines = 0; /* Im using a long long unsigned int for maximum range */
 
-	long long unsigned int lines=0; 	/* Im using a long long unsigned int for maximum range */
+    string str;
 
-	string str;
+    while (getline(qFile, str))
+        ++lines;
 
-	while( getline(qFile,str) ) ++lines;
+    cout << "Queries: " << lines << endl;
 
-	cout << "Queries: " << lines << endl;
+    qFile.clear();
+    qFile.seekg(0, ios::beg);
 
-	qFile.clear();
-	qFile.seekg(0,ios::beg);
-
-	return lines;
+    return lines;
 }

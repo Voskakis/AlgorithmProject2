@@ -14,6 +14,8 @@ int k=4; /* Number of LSH Functions */
 
 int L=5; /* Number of Hash Tables  */
 
+int N=5; /* Number of Nearest Neighbours to be found */
+
 bool metric = 0; /* Metric to be used 0: Euclidian 1: Cosine */
 
 int main(int argc, char *argv[])
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
 		}
 
 
-		Euclidian_LSH_File(L,k);
+		Euclidian_LSH_File(L,k,N);
 
 	}
 

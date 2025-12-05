@@ -18,4 +18,4 @@ RUN make
 
 WORKDIR /app/nlsh
 COPY ./nlsh .
-RUN cp /app/lsh/lshlib.*.so .
+RUN cp /app/lsh/lsh .
