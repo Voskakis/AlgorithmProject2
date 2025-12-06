@@ -12,7 +12,7 @@ def main():
     build_input = BuildInput.parse_args()
 
     result = subprocess.check_output(
-        ["./lsh", "-d", f"./{build_input.input_file}", "-q", f"./{build_input.input_file}", "-k", f"4", "-L", f"{build_input.batch_size}", "-N",
+        ["./lsh", "-d", f"./{build_input.input_file}", "-q", f"./{build_input.input_file}", "-k", f"4", "-L", f"{build_input.batch_size+1}", "-N",
          f"{build_input.knn_neighbors}", "-o", "output.txt"])
     knn = [list(map(int, line.split())) for line in result.splitlines()]
     adj_set, xadj, vwgt, adjcwgt, adjncy = build_graph_items(knn)
