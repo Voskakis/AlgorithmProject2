@@ -15,6 +15,10 @@ def main():
         ["./lsh", "-d", f"./{build_input.input_file}", "-q", f"./{build_input.input_file}", "-k", f"4", "-L", f"{build_input.batch_size+1}", "-N",
          f"{build_input.knn_neighbors}", "-o", "output.txt"])
     knn = [list(map(int, line.split())) for line in result.splitlines()]
+    counter = 0
+    for i in knn:
+        i.remove(counter)
+        counter += 1
     adj_set, xadj, vwgt, adjcwgt, adjncy = build_graph_items(knn)
 
     blocks, edgecut = run_kahip(vwgt, xadj, adjcwgt, adjncy, build_input.members, build_input.imbalance,
