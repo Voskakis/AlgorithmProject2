@@ -67,12 +67,11 @@ class BuildInput:
         parser.add_argument("--seed", type=int, default=1)
         build_input = BuildInput(**vars(parser.parse_args()))
         output_path = f"{uuid.uuid4()}"
-        with open(build_input.input_file, "r") as f:
-            content = f.read()
+
         if build_input.type == EndianType.Sift:
-            content_raw = load_sift_descriptors(content)
+            content_raw = load_sift_descriptors(build_input.input_file)
         else:
-            content_raw = load_idx_images(content)
+            content_raw = load_idx_images(build_input.input_file)
         with open(output_path, "w") as f:
             for vec in content_raw:
                 line = " ".join(map(str, vec))
