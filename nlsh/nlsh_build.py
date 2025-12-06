@@ -10,14 +10,14 @@ from my_types import BuildInput
 
 def main():
     build_input = BuildInput.parse_args()
-    output_path = f"{uuid.uuid4()}"
-    with open(build_input.input_file, "r") as f:
-        content = f.read()
-    content_no_newlines = content.replace("\n", " ")
-    with open(output_path, "w") as f:
-        f.write(content_no_newlines)
+    # output_path = f"{uuid.uuid4()}"
+    # with open(build_input.input_file, "r") as f:
+    #     content = f.read()
+    # content_no_newlines = content.replace("\n", "")
+    # with open(output_path, "w") as f:
+    #     f.write(content_no_newlines)
     result = subprocess.check_output(
-        ["./lsh", "-d", f"{output_path}", "-q", f"{output_path}", "-k", f"4", "-L", f"{build_input.batch_size}", "-N",
+        ["./lsh", "-d", f"./{build_input.input_file}", "-q", f"./{build_input.input_file}", "-k", f"4", "-L", f"{build_input.batch_size}", "-N",
          f"{build_input.knn_neighbors}", "-o", "output.txt"])
     knn = [list(map(int, line.split())) for line in result.splitlines()]
     adj_set, xadj, vwgt, adjcwgt, adjncy = build_graph_items(knn)
