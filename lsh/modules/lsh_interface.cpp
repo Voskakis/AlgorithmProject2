@@ -52,7 +52,6 @@ void lsh_build()
     long long unsigned int lines = get_number_of_lines();
 
     if (metric == 0) {
-        cout << "Using Euclidian metric..." << endl;
 
         HashTable_Euclidian_Initialization(L);
         HashFunctions_Euclidian_Initialization(k, L);
@@ -62,7 +61,6 @@ void lsh_build()
             Euclidian_Hash_from_file(i, L, k);
         }
     } else {
-        cout << "Using Cosine Similarity..." << endl;
 
         HashTable_Cosine_Initialization(L, k);
         HashFunctions_Cosine_Initialization(L, k);
@@ -78,7 +76,7 @@ void lsh_build()
 void lsh_run_all_queries()
 {
     if (metric == 0) {
-        Euclidian_LSH_File(L, k);   // This will use qFile and outFile
+        Euclidian_LSH_File(L, k, N);   // This will use qFile and outFile
     } else {
         Cosine_LSH_File(L, k);
     }

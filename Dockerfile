@@ -4,9 +4,7 @@ FROM python:3.10.19
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
         bash \
-        python3-dev \
-        cmake \
-        pybind11-dev
+        python3-dev
 
 WORKDIR /app/nlsh
 COPY ./nlsh/requirements.txt ./requirements.txt

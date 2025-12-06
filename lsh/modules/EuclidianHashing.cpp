@@ -12,17 +12,12 @@ void HashTable_Euclidian_Initialization(int L) {
 
     Euclidian_Hash_Tables.resize(
             L, vector<vector<long long unsigned int>>(n / 2, vector<long long unsigned int>(1000)));
-
-    cout << "I just resized the Hash tables with size: " << L << " x " << n / 2 << endl;
 }
 
 void HashFunctions_Euclidian_Initialization(int k, int L) {
     /* First lets fill out the v vectors used for the euclidian hashing method */
 
     v.resize(k, vector<double>(dim));
-
-    cout << "I just resized the Hash Functions with size: " << k << " x " << dim << endl;
-
     for (int i = 0; i < k; i++) {
         v[i].clear();
 
@@ -284,11 +279,11 @@ void Euclidian_Full_Search_NN(int query_line, int N) {
     }
 
     for (size_t rank = 0; rank < best_true.size(); ++rank) {
-        outFile << best_true[rank].second;
+        std::cout << best_true[rank].second;
         if (rank + 1 < best_true.size())
-            outFile << " ";
+            std::cout << " ";
     }
-    outFile << "\n";
+    std::cout << "\n";
 }
 
 void Euclidian_Full_Search_Range(int query_line, double radius) {
@@ -296,7 +291,7 @@ void Euclidian_Full_Search_Range(int query_line, double radius) {
 
     get_query(query_line);
 
-    outFile << "R-Near Neighbours:" << endl;
+    std::cout << "R-Near Neighbours:" << endl;
 
     long long unsigned int dist;
 
@@ -304,7 +299,7 @@ void Euclidian_Full_Search_Range(int query_line, double radius) {
         dist = calcute_euclidian_distance(i, query_line);
 
         if (dist < radius) {
-            outFile << "Item " << i << endl;
+            std::cout << "Item " << i << endl;
         }
     }
 }
@@ -368,12 +363,11 @@ void Nearest_Query_Euclidian(int query_line, int L, int k, int N) {
     std::chrono::duration<double> elapsed1 = finish1 - start1;
 
     for (size_t rank = 0; rank < best_lsh.size(); ++rank) {
-        outFile << best_lsh[rank].second;
+        std::cout << best_lsh[rank].second;
         if (rank + 1 < best_lsh.size())
-            outFile << " ";
+            std::cout << " ";
     }
-    outFile << "\n";
-
+    std::cout << "\n";
     // auto start2 = std::chrono::high_resolution_clock::now();
 
     // Euclidian_Full_Search_NN(query_line, N);
@@ -431,12 +425,12 @@ void Range_Search_Euclidian(int query_line, double range, int L, int k) {
 
     auto finish1 = std::chrono::high_resolution_clock::now();
 
-    outFile << "Query " << query_line << endl;
-    outFile << "R-Near Neighbours: " << endl;
+    std::cout << "Query " << query_line << endl;
+    std::cout << "R-Near Neighbours: " << endl;
 
     for (auto j = points_in_range_euc.begin(); j != points_in_range_euc.end(); ++j) {
         // cout << "Point " << *j << " is in range " << range << endl;
-        outFile << "Item " << *j << endl;
+        std::cout << "Item " << *j << endl;
     }
 
     std::chrono::duration<double> elapsed1 = finish1 - start1;
@@ -449,11 +443,11 @@ void Range_Search_Euclidian(int query_line, double range, int L, int k) {
 
     // std::chrono::duration<double> elapsed2 = finish2 - start2;
 
-    outFile << "tLSH: " << elapsed1.count() << endl;
+    std::cout << "tLSH: " << elapsed1.count() << endl;
 
-    // outFile << "tTrue: " << elapsed2.count() << endl;
+    // std::cout <<  "tTrue: " << elapsed2.count() << endl;
 
-    outFile << "==================================================== " << endl;
+    std::cout << "==================================================== " << endl;
     points_in_range_euc.clear();
 }
 

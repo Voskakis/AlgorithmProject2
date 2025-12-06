@@ -31,18 +31,6 @@ int main(int argc, char *argv[])
 
 	}
 
-	/* If the input was OK, proceed to find if a metric is specified in the file */
-
-	if( metric == 0 ){
-
-		cout << "Using Euclidian metric..."<< endl;
-	
-	}else{
-
-		cout << "Using Cosine Similarity..."<< endl;
-
-	}
-
 	/* Initializion of Hash Functions and Hash table */
 
 	long long unsigned int lines = get_number_of_lines();
@@ -54,8 +42,6 @@ int main(int argc, char *argv[])
 		HashFunctions_Euclidian_Initialization(k,L);
 
 		Euclidian_Hash_Tables_Finalization(L);
-
-		cout << "-----------------------------" << endl;
 
 		for(int i=0; i < lines ;i++){
 
@@ -79,8 +65,6 @@ int main(int argc, char *argv[])
 			Cosine_Hash_from_file(i,L,k);
 
 		}
-
-		cout << "-----------------------------" << endl;
 
 		Hash_Tables_Finalization(L,k);
 

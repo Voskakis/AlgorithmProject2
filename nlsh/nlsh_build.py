@@ -9,9 +9,9 @@ from my_types import BuildInput
 
 def main():
     build_input = BuildInput.parse_args()
-    result = subprocess.run(
-        ["./lsh", "-d", "../lsh/sample_datasets/dataset.txt", "-q", "../lsh/sample_datasets/queries.txt", "-k", "4",
-         "-L", "5", "-N", "5", "-o", "output.txt"], capture_output=True, text=True)
+    result = subprocess.check_output(
+        ["./lsh", "-d", "./input_small", "-q", "./query_small", "-k", "4",
+         "-L", "5", "-N", "5", "-o", "output.txt"])
     knn = load_knn_file(build_input.input_file)
 
     adj_set, xadj, vwgt, adjcwgt, adjncy = build_graph_items(knn)
