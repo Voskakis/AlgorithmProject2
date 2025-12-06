@@ -1,19 +1,25 @@
 import subprocess
+import uuid
 
 import torch
 
-from build_pipeline import load_knn_file, run_kahip, build_graph_items, create_inverted_file
+from build_pipeline import run_kahip, build_graph_items, create_inverted_file
 from build_pipeline.neural import MLPClassifier
 from my_types import BuildInput
 
 
 def main():
     build_input = BuildInput.parse_args()
+    output_path = f"{uuid.uuid4()}"
+    with open(build_input.input_file, "r") as f:
+        content = f.read()
+    content_no_newlines = content.replace("\n", " ")
+    with open(output_path, "w") as f:
+        f.write(content_no_newlines)
     result = subprocess.check_output(
-        ["./lsh", "-d", "./input_small", "-q", "./query_small", "-k", "4",
-         "-L", "5", "-N", "5", "-o", "output.txt"])
-    knn = load_knn_file(build_input.input_file)
-
+        ["./lsh", "-d", f"{output_path}", "-q", f"{output_path}", "-k", f"4", "-L", f"{build_input.batch_size}", "-N",
+         f"{build_input.knn_neighbors}", "-o", "output.txt"])
+    knn = [list(map(int, line.split())) for line in result.splitlines()]
     adj_set, xadj, vwgt, adjcwgt, adjncy = build_graph_items(knn)
 
     blocks, edgecut = run_kahip(vwgt, xadj, adjcwgt, adjncy, build_input.members, build_input.imbalance,
