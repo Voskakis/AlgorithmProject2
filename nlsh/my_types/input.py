@@ -25,10 +25,17 @@ def load_idx_images(path):
 
 
 def load_sift_descriptors(path):
+    descriptors = []
     with open(path, "rb") as f:
-        num_desc, dim = struct.unpack(">II", f.read(8))
-        raw = f.read(num_desc * dim)
-    descriptors = [list(raw[i * dim: (i + 1) * dim]) for i in range(num_desc)]
+        while True:
+            dim_bytes = f.read(4)
+            if not dim_bytes:
+                break
+            (dim,) = struct.unpack("<I", dim_bytes)  # little-endian
+            vec = f.read(dim)
+            if len(vec) != dim:
+                raise ValueError("Truncated file")
+            descriptors.append(list(vec))
     return descriptors
 
 
