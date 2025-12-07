@@ -18,11 +18,8 @@ def main():
         ["./lsh", "-d", f"./{build_input.input_file}", "-q", f"./{build_input.input_file}", "-k", f"10", "-L", f"{build_input.batch_size}", "-N",
          f"{build_input.knn_neighbors + 1}", "-o", "output.txt"])
     knn = [list(map(int, line.split())) for line in result.splitlines()]
-    counter = 0
     for i in knn:
-        if counter in i:
-            i.remove(counter)
-        counter += 1
+        del i[0]
     adj_set, xadj, vwgt, adjcwgt, adjncy = build_graph_items(knn)
 
     blocks, edgecut = run_kahip(vwgt, xadj, adjcwgt, adjncy, build_input.members, build_input.imbalance,
@@ -44,9 +41,9 @@ def main():
                                    batch_size=build_input.batch_size, lr=build_input.learn_rate)
     # save model weights
     build_input.index_path.mkdir(parents=True, exist_ok=True)
-    torch.save(model_wrapper.state_dict(), build_input.index_path.name + "/inverted_file.txt")
+    torch.save(model_wrapper.state_dict(), build_input.index_path.name + "/model.pt")
     # save inverted index
-    create_inverted_file(blocks, build_input.members, build_input.index_path.name + "/model.pth")
+    create_inverted_file(blocks, build_input.members, build_input.index_path.name + "/inverted_file.txt")
 
 
 if __name__ == "__main__":

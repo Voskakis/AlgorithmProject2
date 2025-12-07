@@ -11,7 +11,7 @@ from my_types import SearchInput
 
 def format_output(image_id: int, results: list[list[int]], r:int=0) -> str:
     header = "Query: {qID}\n"
-    bodyPiece = "Nearest neighbor-{count}: {neighborID}\ndistanceApproximate: {dis}\ndistanceTrue: {disT}\n\n}"
+    bodyPiece = "Nearest neighbor-{count}: {neighborID}\ndistanceApproximate: {dis}\ndistanceTrue: {disT}\n\n"
     rPiece = "R-near neighbors:\n"
 
     output = header.format(qID = image_id)
@@ -45,7 +45,7 @@ def add_better_result(point, q, result_list, N):
     elif distance < result_list[0][1]:
         result_list[0] = [point, distance]
     if len(result_list) >= N > 1:
-        max_index = max(range(len(result_list)), key=lambda x: x[1])
+        max_index = max(range(len(result_list)), key=lambda x: result_list[x][1])
         result_list[0], result_list[max_index] = result_list[max_index], result_list[0]
     return result_list
 
@@ -58,12 +58,12 @@ def exhaustive_search(point_set: list[list[int]], q, N) -> list[list[int]]:
 
 def main():
     search_input = SearchInput.parse_args()
-    inverted_file = load_inverted_file(search_input.index_path.name + "/inverted_file.pt")
+    inverted_file = load_inverted_file(search_input.index_path.name + "/inverted_file.txt")
 
     input_dim = 128  if search_input.type is EndianType.Sift else 28 * 28
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = MLPClassifier(d_in=input_dim, n_out=search_input.members, layers=search_input.layers, nodes=search_input.nodes).to(device)
-    model.load_state_dict(torch.load(search_input.index_path.name + "/model.pth"))
+    model.load_state_dict(torch.load(search_input.index_path.name + "/model.pt"))
     model.eval()
 
     totalAproximateTime = 0
@@ -74,7 +74,7 @@ def main():
     outputFile = open(search_input.output_file, "a")
     outputFile.write("Neural LSH\n")
 
-    for q, index in zip(search_input.query_file, range(len(search_input.query_file))):
+    for q, index in zip(search_input.query_data, range(len(search_input.query_data))):
         start = time.time()
         # prediction
         query_tensor = torch.tensor(q, dtype=torch.float32).unsqueeze(0).view(1, -1)
@@ -89,7 +89,7 @@ def main():
         for label_tensor in top_k_labels[0]:
             label = label_tensor.item()
             for pointID in inverted_file[label]:
-                search_space.append(search_input.input_file[pointID])
+                search_space.append(search_input.input_data[pointID])
         # exhaustive search
         results = exhaustive_search(search_space, q, search_input.nearest_neighbors)
         end = time.time()
@@ -97,12 +97,12 @@ def main():
 
         #brute force
         start = time.time()
-        exhaustResults = exhaustive_search(search_input.input_file, q, search_input.nearest_neighbors)
+        exhaustResults = exhaustive_search(search_input.input_data, q, search_input.nearest_neighbors)
         end = time.time()
         totalExhaustTime += (end - start)
 
         # output
-        AFcount += results[0][1]/results[0][2]
+        AFcount += results[0][1]/exhaustResults[0][1]
         recNcount += sum(x not in results for x in exhaustResults)
 
         outputFile.write(format_output(index, [r1 +r2[1:] for r1, r2 in zip(results, exhaustResults)],search_input.search_radius))

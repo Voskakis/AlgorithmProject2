@@ -70,10 +70,10 @@ class BuildInput:
         parser.add_argument("-type", dest="type", choices=[e for e in EndianType], required=True, type=EndianType)
         parser.add_argument("--knn", dest="knn_neighbors", type=int, default=10)
         parser.add_argument("-m", dest="members", type=int, default=100)
+        parser.add_argument("--layers", type=int, default=3)
         parser.add_argument("--imbalance", type=float, default=0.03)
         parser.add_argument("--kahip_mode", type=lambda x: KahipMode(int(x)),
             choices=[KahipMode.FAST, KahipMode.ECO, KahipMode.STRONG], default=KahipMode.STRONG)
-        parser.add_argument("--layers", type=int, default=3)
         parser.add_argument("--nodes", type=int, default=64)
         parser.add_argument("--epochs", type=int, default=10)
         parser.add_argument("--batch_size", type=int, default=128)
@@ -101,10 +101,15 @@ class SearchInput:
     index_path: Path
     output_file: Path
     type: EndianType
+    layers: Optional[int] = 3
+    members: Optional[int] = 100
+    nodes: Optional[int] = 64
     nearest_neighbors: Optional[int] = 1
     search_radius: Optional[float] = 2000
     bins_check: Optional[int] = 5
     range: Optional[bool] = True
+    input_data = []
+    query_data = []
 
     @classmethod
     def parse_args(cls):
@@ -118,6 +123,9 @@ class SearchInput:
         parser.add_argument("-R", type=float, dest="search_radius")
         parser.add_argument("-T", type=int, default=5, dest="bins_check")
         parser.add_argument("-range", type=parse_bool, default=True, dest="range")
+        parser.add_argument("-m", dest="members", type=int, default=100)
+        parser.add_argument("--layers", type=int, default=3, dest="layers")
+        parser.add_argument("--nodes", type=int, default=64, dest="nodes")
         args = parser.parse_args()
         endian_type = EndianType(args.type)
         if not range:
@@ -127,6 +135,15 @@ class SearchInput:
                 args.search_radius = 2800
             else:
                 args.search_radius = 2000
-        return SearchInput(input_file=args.input_file, query_file=args.query_file, index_path=args.index_path,
+        search_input = SearchInput(input_file=args.input_file, query_file=args.query_file, index_path=args.index_path,
             output_file=args.output_file, type=endian_type, nearest_neighbors=args.nearest_neighbors,
-            search_radius=args.search_radius, bins_check=args.bins_check, range=args.range, )
+            search_radius=args.search_radius, bins_check=args.bins_check, range=args.range, layers=args.layers, members=args.members, nodes=args.nodes)
+        if search_input.type == EndianType.Sift:
+            search_input.input_data = load_sift_descriptors(search_input.input_file)
+        else:
+            search_input.input_data = load_idx_images(search_input.input_file)
+        if search_input.type == EndianType.Sift:
+            search_input.query_data = load_sift_descriptors(search_input.query_file)
+        else:
+            search_input.query_data = load_idx_images(search_input.query_file)
+        return search_input
