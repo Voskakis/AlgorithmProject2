@@ -6,6 +6,7 @@ from torch.utils.data import TensorDataset, DataLoader, Dataset
 import torch
 from build_pipeline.neural import MLPClassifier
 from build_pipeline import load_inverted_file
+from enums import EndianType
 from my_types import SearchInput
 
 def format_output(image_id: int, results: list[list[int]], r:int=0) -> str:
@@ -57,12 +58,12 @@ def exhaustive_search(point_set: list[list[int]], q, N) -> list[list[int]]:
 
 def main():
     search_input = SearchInput.parse_args()
-    inverted_file = load_inverted_file(search_input.index_path+"/inverted_file.txt")
+    inverted_file = load_inverted_file(search_input.index_path.name + "/inverted_file.pt")
 
-    input_dim = 28 * 28 # TODO possibly different for SIFT
+    input_dim = 128  if search_input.type is EndianType.Sift else 28 * 28
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = MLPClassifier(d_in=input_dim, n_out=search_input.members, layers=search_input.layers, nodes=search_input.nodes).to(device)
-    model.load_state_dict(torch.load(search_input.index_path+"/model.pth"))
+    model.load_state_dict(torch.load(search_input.index_path.name + "/model.pth"))
     model.eval()
 
     totalAproximateTime = 0

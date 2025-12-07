@@ -4,78 +4,64 @@
 
 using namespace std;
 
-ifstream inFile; /* Input File */
+ifstream inFile;
+ifstream qFile;
+ofstream outFile;
 
-ifstream qFile; /* Query File */
-
-ofstream outFile; /* Output File */
-
-int k=4; /* Number of LSH Functions */
-
-int L=5; /* Number of Hash Tables  */
-
-int N=5; /* Number of Nearest Neighbours to be found */
-
-bool metric = 0; /* Metric to be used 0: Euclidian 1: Cosine */
+int k = 4;   // number of LSH functions
+int L = 5;   // number of hash tables
+int N = 5;   // number of nearest neighbors
+bool metric = 0;
 
 int main(int argc, char *argv[])
 {
+    int input = user_input_handling(argc, argv);
+    if (input == -1) {
+        cout << "The program will now exit." << endl;
+        return -1;
+    }
 
-	int input = user_input_handling(argc,argv); /* Handle User Input */
+    long long unsigned int lines = get_number_of_lines();
 
-	if( input == -1 ){ 							/* Check if user input was OK */
+    // ========================
+    //   EUCLIDEAN LSH
+    // ========================
+    if (metric == 0) 
+    {
+        HashTable_Euclidian_Initialization(L);
+        HashFunctions_Euclidian_Initialization(k, L);
 
-		cout << "The program will now exit." << endl;
+        // FIRST insert all dataset vectors
+        for (int i = 0; i < lines; i++)
+            Euclidian_Hash_from_file(i, L, k);
 
-		return -1;
+        // THEN finalize cleanup (removes zeros)
+        Euclidian_Hash_Tables_Finalization(L);
 
-	}
+        // Now perform queries (0..lines-1 if query file = input file)
+        Euclidian_LSH_File(L, k, N);
+    }
 
-	/* Initializion of Hash Functions and Hash table */
+    // ========================
+    //   COSINE LSH
+    // ========================
+    if (metric == 1) 
+    {
+        HashTable_Cosine_Initialization(L, k);
+        HashFunctions_Cosine_Initialization(L, k);
 
-	long long unsigned int lines = get_number_of_lines();
+        for (int i = 0; i < lines; i++)
+            Cosine_Hash_from_file(i, L, k);
 
-	if( metric == 0 ){
+        Hash_Tables_Finalization(L, k);
 
-		HashTable_Euclidian_Initialization(L);
+        // FIX: pass N
+        Cosine_LSH_File(L, k);
+    }
 
-		HashFunctions_Euclidian_Initialization(k,L);
+    inFile.close();
+    qFile.close();
+    outFile.close();
 
-		Euclidian_Hash_Tables_Finalization(L);
-
-		for(int i=0; i < lines ;i++){
-
-			Euclidian_Hash_from_file(i,L,k);
-
-		}
-
-
-		Euclidian_LSH_File(L,k,N);
-
-	}
-
-	if( metric == 1 ){
-
-		HashTable_Cosine_Initialization(L,k);
-
-		HashFunctions_Cosine_Initialization(L,k);
-
-		for(int i=0; i < lines ;i++){
-
-			Cosine_Hash_from_file(i,L,k);
-
-		}
-
-		Hash_Tables_Finalization(L,k);
-
-		Cosine_LSH_File(L,k);
-
-	}
-
- 	outFile.close();
-	inFile.close();
-	qFile.close(); 
-
-	return 0;
-
+    return 0;
 }

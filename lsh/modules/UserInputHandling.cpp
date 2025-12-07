@@ -274,8 +274,6 @@ long long unsigned int get_number_of_queries(void) {
     while (getline(qFile, str))
         ++lines;
 
-    cout << "Queries: " << lines << endl;
-
     qFile.clear();
     qFile.seekg(0, ios::beg);
 

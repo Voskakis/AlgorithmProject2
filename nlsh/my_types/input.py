@@ -54,6 +54,13 @@ class BuildInput:
     batch_size: Optional[int] = 128
     learn_rate: Optional[float] = 0.001
     seed: Optional[int] = 1
+    input_data = []
+
+    def get_initial(self):
+        if self.type == EndianType.Sift:
+            return load_sift_descriptors(self.input_file)
+        else:
+            return load_idx_images(self.input_file)
 
     @classmethod
     def parse_args(cls):
@@ -76,14 +83,14 @@ class BuildInput:
         output_path = f"{uuid.uuid4()}"
 
         if build_input.type == EndianType.Sift:
-            content_raw = load_sift_descriptors(build_input.input_file)
+            build_input.input_data = load_sift_descriptors(build_input.input_file)
         else:
-            content_raw = load_idx_images(build_input.input_file)
+            build_input.input_data = load_idx_images(build_input.input_file)
         with open(output_path, "w") as f:
-            for vec in content_raw:
+            for vec in build_input.input_data:
                 line = " ".join(map(str, vec))
                 f.write(line + "\n")
-        build_input.index_path = Path(output_path)
+        build_input.input_file = Path(output_path)
         return build_input
 
 
