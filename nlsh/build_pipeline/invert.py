@@ -5,7 +5,6 @@ def create_inverted_file(blocks:list[int], nblocks:int, output_file:str):
   output = open(output_file, "w")
   for line in inverted:
     print(*line, sep=" ", file=output)
-    output.write('\n')
   output.close()
 
 def load_inverted_file(inverted_file:str) -> list[list[int]]:
